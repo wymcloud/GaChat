@@ -6,61 +6,44 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
+
+@Component
 public class NettyClient {
-    /**
-     * 主机
-     */
-    private String host;
 
-    /**
-     * 端口号
-     */
-    private int port;
+    private final static Logger log = LoggerFactory.getLogger(NettyClient.class);
 
-    /**
-     * 构造函数
-     *
-     * @param host
-     * @param port
-     */
-    public NettyClient(String host, int port) {
-        this.host = host;
-        this.port = port;
-    }
+    private EventLoopGroup group = new NioEventLoopGroup();
 
+    @Resource
+    private NettyClientConfig nettyConfig;
     /**
      * 连接方法
      */
-    public void connect() {
-        EventLoopGroup group = new NioEventLoopGroup();
-        try {
+    @PostConstruct
+    public void connect() throws InterruptedException {
             Bootstrap bootstrap = new Bootstrap();
             bootstrap.group(group).channel(NioSocketChannel.class);
             bootstrap.option(ChannelOption.TCP_NODELAY, true);
-            // bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
+            bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
             bootstrap.handler(new NettyClientInitializer());
-            Channel channel = bootstrap.connect(host, port).sync().channel();
+            Channel channel = bootstrap.connect(nettyConfig.getHost(), nettyConfig.getPort()).sync().channel();
             // 发送json字符串
             String msg = "{\"name\":\"admin\",\"age\":27}\n";
             channel.writeAndFlush(msg);
             channel.closeFuture().sync();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            group.shutdownGracefully();
-        }
     }
 
-    /**
-     * 测试入口
-     *
-     * @param args
-     */
-    public static void main(String[] args) {
-        String host = "127.0.0.1";
-        int port = 8088;
-        NettyClient nettyClient = new NettyClient(host, port);
-        nettyClient.connect();
+    @PreDestroy
+    public void destory() throws InterruptedException {
+        group.shutdownGracefully().sync();
+        log.info("关闭Netty");
     }
+
 }

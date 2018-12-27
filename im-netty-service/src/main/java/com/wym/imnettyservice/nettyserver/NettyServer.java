@@ -66,12 +66,7 @@ public class NettyServer {
                 //将小的数据包包装成更大的帧进行传送，提高网络的负载,即TCP延迟传输
                 .childOption(ChannelOption.TCP_NODELAY, true)
 
-                .childHandler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    protected void initChannel(SocketChannel socketChannel) throws Exception {
-
-                    }
-                });
+                .childHandler(new NettyServerInitializer());
         ChannelFuture future = bootstrap.bind(nettyConfig.getPort()).sync();
         if (future.isSuccess()) {
             log.info("启动 Netty Server");

@@ -1,0 +1,7 @@
+netty-cli:
+  port: 8082
+  host: 127.0.0.1
+server:
+  port: 8083
+
+
