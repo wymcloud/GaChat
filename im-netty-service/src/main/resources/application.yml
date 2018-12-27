@@ -1,0 +1,7 @@
+netty:
+  port: 11111
+
+server:
+  port: 8080
+
+
