@@ -1,4 +1,4 @@
-package com.wym.imnettyservice.nettyserver;
+package com.wym.imnettyservice.nettyserver.handle;
 
 import com.alibaba.fastjson.JSON;
 import io.netty.channel.ChannelHandlerContext;
@@ -21,6 +21,7 @@ public class NettyServerHandler  extends SimpleChannelInboundHandler<String> {
     protected void channelRead0(ChannelHandlerContext ctx, String msg) {
         StringBuilder sb = null;
         Map<String, Object> result = null;
+        log.info(msg);
         try {
             // 报文解析处理
             sb = new StringBuilder();

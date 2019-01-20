@@ -1,4 +1,4 @@
-package com.gachat.webservice.websocket;
+package com.gachat.webservice.websocket.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

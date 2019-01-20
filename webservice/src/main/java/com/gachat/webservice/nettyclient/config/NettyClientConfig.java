@@ -1,4 +1,4 @@
-package com.wym.imnettyservice.config;
+package com.gachat.webservice.nettyclient.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -10,10 +10,11 @@ import org.springframework.stereotype.Component;
  **/
 @Data
 @Component
-@ConfigurationProperties(prefix = "netty")
-public class NettyConfig {
+@ConfigurationProperties(prefix = "netty-cli")
+public class NettyClientConfig {
 
     private int port;
 
+    private String host;
 
 }

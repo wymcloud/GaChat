@@ -1,7 +1,10 @@
 package com.gachat.webservice.websocket;
 
+import com.gachat.webservice.nettyclient.client.INettyClient;
+import com.gachat.webservice.nettyclient.client.NettyClient;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
@@ -21,7 +24,9 @@ public class ImWebSocket {
     private static CopyOnWriteArraySet<ImWebSocket> webSocketSet = new CopyOnWriteArraySet<ImWebSocket>();
 
     //与某个客户端的连接会话，需要通过它来给客户端发送数据
-    private Session session;
+    private static Session session;
+
+
 
     /**
      * 连接建立成功调用的方法*/
@@ -31,11 +36,6 @@ public class ImWebSocket {
         webSocketSet.add(this);     //加入set中
         addOnlineCount();           //在线数加1
         System.out.println("有新连接加入！当前在线人数为" + getOnlineCount());
-       /* try {
-            sendMessage(CommonConstant.CURRENT_WANGING_NUMBER.toString());
-        } catch (IOException e) {
-            System.out.println("IO异常");
-        }*/
     }
 
     /**
@@ -54,51 +54,49 @@ public class ImWebSocket {
      * @param message 客户端发送过来的消息*/
     @OnMessage
     public void onMessage(String message, Session session) {
+        NettyClient nettyClient = new NettyClient();
+        nettyClient.init();
         System.out.println("来自客户端的消息:" + message);
-
-        //群发消息
-      /*  for (ImWebSocket item : webSocketSet) {
-            try {
-                item.sendMessage(message);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }*/
     }
 
     /**
-     * 发生错误时调用
-     @OnError
-     public void onError(Session session, Throwable error) {
-     System.out.println("发生错误");
-     error.printStackTrace();
-     }
+     * 向客户端发送消息
+     *
+     * @param message
+     * @throws IOException
+     */
+    public static void sendMessage(String message) throws IOException {
+        session.getBasicRemote().sendText(message);
+    }
 
 
-     public void sendMessage(String message) throws IOException {
-     this.session.getBasicRemote().sendText(message);
-     //this.session.getAsyncRemote().sendText(message);
-     }
+        /**
+         * 发生错误时调用
+         @OnError
+         public void onError(Session session, Throwable error) {
+         System.out.println("发生错误");
+         error.printStackTrace();
+         }
 
 
-     /**
-      * 群发自定义消息
-      * */
+         public void sendMessage(String message) throws IOException {
+         this.session.getBasicRemote().sendText(message);
+         //this.session.getAsyncRemote().sendText(message);
+         }
+
+
+         /**
+          * 群发自定义消息
+          * */
     public static void sendInfo(String message) throws IOException {
-        for (ImWebSocket item : webSocketSet) {
-           /* try {
-                item.sendMessage(message);
-            } catch (IOException e) {
-                continue;
-            }*/
-        }
+        sendMessage(message);
     }
 
     public static synchronized int getOnlineCount() {
         return onlineCount;
     }
 
-    public static synchronized void     addOnlineCount() {
+    public static synchronized void addOnlineCount() {
         ImWebSocket.onlineCount++;
     }
 

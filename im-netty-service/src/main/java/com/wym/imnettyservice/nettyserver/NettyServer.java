@@ -1,13 +1,12 @@
 package com.wym.imnettyservice.nettyserver;
 
-import com.wym.imnettyservice.config.NettyConfig;
+import com.wym.imnettyservice.nettyserver.config.NettyConfig;
+import com.wym.imnettyservice.nettyserver.handle.NettyServerInitializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +68,7 @@ public class NettyServer {
                 .childHandler(new NettyServerInitializer());
         ChannelFuture future = bootstrap.bind(nettyConfig.getPort()).sync();
         if (future.isSuccess()) {
-            log.info("启动 Netty Server");
+            log.info("启动 Netty Server 端口：" + nettyConfig.getPort());
         }
     }
 

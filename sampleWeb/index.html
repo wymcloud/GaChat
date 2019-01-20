@@ -1,0 +1,36 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <div>
+            发送<input id="name">
+        </div>
+
+        <div>
+            回显<span id="show"></span>
+        </div>
+    </body>
+</html>
+
+
+<script>
+
+
+var ws = new WebSocket("ws://localhost:8083/websocket");
+ 
+ws.onopen = function(evt) {
+	console.log("Connection open ...");
+	ws.send("Hello WebSockets!");
+};
+ 
+ws.onmessage = function(evt) {
+    alert(evt);
+	console.log("Received Message: " + evt.data);
+	ws.close();
+};
+ 
+ws.onclose = function(evt) {
+	console.log("Connection closed.");
+}
+
+</script>

@@ -1,4 +1,4 @@
-package com.gachat.webservice.nettyclient;
+package com.wym.imnettyservice.nettyserver.handle;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -9,8 +9,7 @@ import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.util.CharsetUtil;
 
-public class NettyClientInitializer extends ChannelInitializer<SocketChannel> {
-
+public class NettyServerInitializer  extends ChannelInitializer<SocketChannel> {
     /**
      * 初始化channel
      */
@@ -20,6 +19,7 @@ public class NettyClientInitializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast(new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));
         pipeline.addLast(new StringDecoder(CharsetUtil.UTF_8));
         pipeline.addLast(new StringEncoder(CharsetUtil.UTF_8));
-        pipeline.addLast(new NettyClientHandler());
+        pipeline.addLast(new NettyServerHandler());
     }
+
 }
