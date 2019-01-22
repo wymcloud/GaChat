@@ -2,6 +2,7 @@ package com.gachat.webservice.websocket;
 
 import com.gachat.webservice.nettyclient.client.INettyClient;
 import com.gachat.webservice.nettyclient.client.NettyClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -25,6 +26,7 @@ public class ImWebSocket {
 
     //与某个客户端的连接会话，需要通过它来给客户端发送数据
     private static Session session;
+
 
 
 
@@ -55,8 +57,14 @@ public class ImWebSocket {
     @OnMessage
     public void onMessage(String message, Session session) {
         NettyClient nettyClient = new NettyClient();
-        nettyClient.init();
+        try {
+            //String msg = "{\""+message+"\":\"admin\",\"age\":27}\n";
+            nettyClient.testConnect(message);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         System.out.println("来自客户端的消息:" + message);
+
     }
 
     /**

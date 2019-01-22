@@ -1,13 +1,16 @@
 <html>
     <head>
     </head>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
     <body>
         <div>
-            发送<input id="name">
+            <input id="message" type="text"><button onclick="sendMessage()">发送</button>
         </div>
 
         <div>
-            回显<span id="show"></span>
+            <div>服务器返回内容:</div>
+            <div><span id="show"></span></div>
+            
         </div>
     </body>
 </html>
@@ -20,17 +23,29 @@ var ws = new WebSocket("ws://localhost:8083/websocket");
  
 ws.onopen = function(evt) {
 	console.log("Connection open ...");
-	ws.send("Hello WebSockets!");
+    
 };
  
 ws.onmessage = function(evt) {
-    alert(evt);
 	console.log("Received Message: " + evt.data);
-	ws.close();
+    $("#show").html(evt.data);
 };
  
 ws.onclose = function(evt) {
 	console.log("Connection closed.");
+	ws.close();
 }
 
+
+function sendMessage(){
+    var status = ws.readyState;
+    if(status == 1){
+        var message = $("#message").val();
+        ws.send(message);
+        $("#message").attr("value","");
+    }else{
+        alert(status);
+    }
+   
+}
 </script>

@@ -9,6 +9,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -18,8 +19,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Slf4j
 @Service
+@Component
 public class NettyClient implements INettyClient {
-    /**s
+    /**
+     * s
      * 各自客户端的channel
      */
     private Channel channel;
@@ -65,6 +68,18 @@ public class NettyClient implements INettyClient {
         channel.closeFuture().sync();*/
 
     }
+    public void testConnect(String messga) throws InterruptedException {
+        Bootstrap bootstrap = new Bootstrap();
+        bootstrap.group(group).channel(NioSocketChannel.class);
+        bootstrap.option(ChannelOption.TCP_NODELAY, true);
+        bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
+        bootstrap.handler(new NettyClientInitializer());
+        Channel channel = bootstrap.connect("127.0.0.1",8082).sync().channel();
+        // 发送json字符串
+        String msg = "{\"name\":\"admin\",\"age\":27}\n";
+        channel.writeAndFlush(messga);
+        channel.closeFuture().sync();
+    }
    /* @PostConstruct
     public void testConnect() throws InterruptedException {
         Bootstrap bootstrap = new Bootstrap();
@@ -100,7 +115,7 @@ public class NettyClient implements INettyClient {
             connect();
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             initialized = Boolean.TRUE;
         }
 
@@ -119,6 +134,7 @@ public class NettyClient implements INettyClient {
 
     @Override
     public void send(Object object) {
+        init();
         if (!initialized) {
             log.warn("netty client not init, message: {}", toString());
             failMessages.add(object);

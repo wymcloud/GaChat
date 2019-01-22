@@ -22,7 +22,8 @@ public class NettyServerHandler  extends SimpleChannelInboundHandler<String> {
         StringBuilder sb = null;
         Map<String, Object> result = null;
         log.info(msg);
-        try {
+        ctx.writeAndFlush(msg);
+      /*  try {
             // 报文解析处理
             sb = new StringBuilder();
             result = JSON.parseObject(msg);
@@ -35,7 +36,7 @@ public class NettyServerHandler  extends SimpleChannelInboundHandler<String> {
             String errorCode = "-1\n";
             ctx.writeAndFlush(errorCode);
             log.error("报文解析失败: " + e.getMessage());
-        }
+        }*/
     }
 
     @Override
