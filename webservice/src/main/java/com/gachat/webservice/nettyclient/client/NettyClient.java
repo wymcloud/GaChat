@@ -1,6 +1,5 @@
 package com.gachat.webservice.nettyclient.client;
 
-import com.gachat.webservice.nettyclient.config.NettyClientConfig;
 import com.gachat.webservice.nettyclient.handle.NettyClientInitializer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -8,18 +7,17 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Slf4j
-@Service
-@Component
+@EqualsAndHashCode
+@Data
 public class NettyClient implements INettyClient {
     /**
      * s
@@ -29,9 +27,9 @@ public class NettyClient implements INettyClient {
 
     private EventLoopGroup group = new NioEventLoopGroup();
 
-    @Resource
-    private NettyClientConfig nettyConfig;
 
+    private String remoteAddress;
+    private Integer remotePort;
     /**
      * 失败的请求
      */
@@ -47,16 +45,25 @@ public class NettyClient implements INettyClient {
      */
     private volatile boolean isLive = Boolean.FALSE;
 
+
+    public NettyClient(String remoteAddress, Integer remotePort) {
+        this.remoteAddress = remoteAddress;
+        this.remotePort = remotePort;
+    }
+
     /**
      * 测试与netty服务器连通
      */
 
+
+/*
     public static void main(String[] args) throws InterruptedException {
         NettyClient nettyClient = new NettyClient();
         nettyClient.init();
         nettyClient.connect();
         nettyClient.send("测试");
-        /*Bootstrap bootstrap = new Bootstrap();
+        */
+/*Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(new NioEventLoopGroup()).channel(NioSocketChannel.class);
         bootstrap.option(ChannelOption.TCP_NODELAY, true);
         bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
@@ -65,21 +72,22 @@ public class NettyClient implements INettyClient {
         // 发送json字符串
         String msg = "{\"name\":\"admin\",\"age\":27}\n";
         channel.writeAndFlush(msg);
-        channel.closeFuture().sync();*/
+        channel.closeFuture().sync();*//*
+
 
     }
+*/
     public void testConnect(String messga) throws InterruptedException {
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(group).channel(NioSocketChannel.class);
         bootstrap.option(ChannelOption.TCP_NODELAY, true);
         bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
         bootstrap.handler(new NettyClientInitializer());
-        Channel channel = bootstrap.connect("127.0.0.1",8082).sync().channel();
-        // 发送json字符串
-        String msg = "{\"name\":\"admin\",\"age\":27}\n";
+        Channel channel = bootstrap.connect("127.0.0.1", 8082).sync().channel();
         channel.writeAndFlush(messga);
         channel.closeFuture().sync();
     }
+
    /* @PostConstruct
     public void testConnect() throws InterruptedException {
         Bootstrap bootstrap = new Bootstrap();
@@ -95,12 +103,12 @@ public class NettyClient implements INettyClient {
     }*/
 
     private void connect() throws InterruptedException {
-        channel = configBootstrap().connect("127.0.0.1",
-                8082).sync().channel();
+        channel = configBootstrap().connect().sync().channel();
     }
 
     private Bootstrap configBootstrap() {
         Bootstrap bootstrap = new Bootstrap();
+        bootstrap.remoteAddress(remoteAddress, remotePort);
         bootstrap.group(group).channel(NioSocketChannel.class);
         bootstrap.option(ChannelOption.TCP_NODELAY, true);
         bootstrap.option(ChannelOption.SO_KEEPALIVE, true);

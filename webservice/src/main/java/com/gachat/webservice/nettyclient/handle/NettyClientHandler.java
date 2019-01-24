@@ -11,6 +11,6 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<String> {
             throws Exception {
         System.out.println("收到服务端消息: " + msg);
         //向websocket发送消息
-        ImWebSocket.sendMessage(msg);
+        ImWebSocket.sendAllMessage(msg);
     }
 }

@@ -25,6 +25,7 @@ ws.onopen = function(evt) {
 	console.log("Connection open ...");
     
 };
+
  
 ws.onmessage = function(evt) {
 	console.log("Received Message: " + evt.data);
@@ -48,4 +49,9 @@ function sendMessage(){
     }
    
 }
+
+$(window).unload(function(){
+    ws.close();
+});
+
 </script>

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
  **/
 @Data
 @Component
-@ConfigurationProperties(prefix = "netty-cli")
+@ConfigurationProperties(prefix = "netty")
 public class NettyClientConfig {
 
     private int port;

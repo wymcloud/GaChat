@@ -1,17 +1,15 @@
 package com.gachat.webservice.websocket;
 
-import com.gachat.webservice.nettyclient.client.INettyClient;
 import com.gachat.webservice.nettyclient.client.NettyClient;
+import com.gachat.webservice.nettyclient.config.NettyClientConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import javax.websocket.OnClose;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
+import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 
@@ -24,17 +22,23 @@ public class ImWebSocket {
     //concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
     private static CopyOnWriteArraySet<ImWebSocket> webSocketSet = new CopyOnWriteArraySet<ImWebSocket>();
 
+    private static CopyOnWriteArraySet<Session> sessionList = new CopyOnWriteArraySet<Session>();
+
+    private static ConcurrentHashMap<String, ImWebSocket> webSocketMap = new ConcurrentHashMap<String, ImWebSocket>();
+
     //与某个客户端的连接会话，需要通过它来给客户端发送数据
     private static Session session;
 
 
-
+    @Autowired
+    private NettyClientConfig nettyConfig;
 
     /**
      * 连接建立成功调用的方法*/
     @OnOpen
     public void onOpen(Session session) {
         this.session = session;
+        sessionList.add(session);
         webSocketSet.add(this);     //加入set中
         addOnlineCount();           //在线数加1
         System.out.println("有新连接加入！当前在线人数为" + getOnlineCount());
@@ -56,15 +60,9 @@ public class ImWebSocket {
      * @param message 客户端发送过来的消息*/
     @OnMessage
     public void onMessage(String message, Session session) {
-        NettyClient nettyClient = new NettyClient();
-        try {
-            //String msg = "{\""+message+"\":\"admin\",\"age\":27}\n";
-            nettyClient.testConnect(message);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        NettyClient nettyClient = new NettyClient("127.0.0.1", 8082);
+        nettyClient.send(message);
         System.out.println("来自客户端的消息:" + message);
-
     }
 
     /**
@@ -73,32 +71,21 @@ public class ImWebSocket {
      * @param message
      * @throws IOException
      */
-    public static void sendMessage(String message) throws IOException {
+    public static void sendAllMessage(String message) throws IOException {
+        for (Session session1 : sessionList) {
+            session1.getBasicRemote().sendText(message);
+        }
+    }
+
+    public void sendMessag1e(String message) throws IOException {
         session.getBasicRemote().sendText(message);
     }
 
-
-        /**
-         * 发生错误时调用
-         @OnError
-         public void onError(Session session, Throwable error) {
-         System.out.println("发生错误");
-         error.printStackTrace();
-         }
-
-
-         public void sendMessage(String message) throws IOException {
-         this.session.getBasicRemote().sendText(message);
-         //this.session.getAsyncRemote().sendText(message);
-         }
-
-
-         /**
-          * 群发自定义消息
-          * */
-    public static void sendInfo(String message) throws IOException {
-        sendMessage(message);
-    }
+     @OnError
+     public void onError(Session session, Throwable error) {
+        System.out.println("发生错误");
+        error.printStackTrace();
+     }
 
     public static synchronized int getOnlineCount() {
         return onlineCount;
