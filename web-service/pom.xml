@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.gachat</groupId>
-    <artifactId>webservice</artifactId>
+    <artifactId>web-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>webservice</name>
+    <name>web-service</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>
@@ -20,6 +20,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <lombok.version>1.16.12</lombok.version>
         <java.version>1.8</java.version>
+        <springfox.version>2.5.0</springfox.version>
     </properties>
 
     <dependencies>
@@ -50,6 +51,17 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>${springfox.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>${springfox.version}</version>
         </dependency>
 
     </dependencies>

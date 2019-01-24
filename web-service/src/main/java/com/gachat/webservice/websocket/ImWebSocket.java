@@ -29,16 +29,11 @@ public class ImWebSocket {
     //与某个客户端的连接会话，需要通过它来给客户端发送数据
     private static Session session;
 
-
-    @Autowired
-    private NettyClientConfig nettyConfig;
-
     /**
      * 连接建立成功调用的方法*/
     @OnOpen
     public void onOpen(Session session) {
         this.session = session;
-        sessionList.add(session);
         webSocketSet.add(this);     //加入set中
         addOnlineCount();           //在线数加1
         System.out.println("有新连接加入！当前在线人数为" + getOnlineCount());
@@ -72,13 +67,13 @@ public class ImWebSocket {
      * @throws IOException
      */
     public static void sendAllMessage(String message) throws IOException {
-        for (Session session1 : sessionList) {
-            session1.getBasicRemote().sendText(message);
+        for (ImWebSocket imWebSocket : webSocketSet) {
+            imWebSocket.sendMessag1e(message);
         }
     }
 
     public void sendMessag1e(String message) throws IOException {
-        session.getBasicRemote().sendText(message);
+        this.session.getBasicRemote().sendText(message);
     }
 
      @OnError
