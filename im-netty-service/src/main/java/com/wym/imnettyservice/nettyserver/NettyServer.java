@@ -55,7 +55,6 @@ public class NettyServer {
                 .channel(NioServerSocketChannel.class)
                 //使用指定的端口设置套接字地址
                 // .localAddress(new InetSocketAddress(port))
-
                 //服务端可连接队列数,对应TCP/IP协议listen函数中backlog参数
                 .option(ChannelOption.SO_BACKLOG, 1024)
 
@@ -66,9 +65,20 @@ public class NettyServer {
                 .childOption(ChannelOption.TCP_NODELAY, true)
 
                 .childHandler(new NettyServerInitializer());
-        ChannelFuture future = bootstrap.bind(nettyConfig.getPort()).sync();
-        if (future.isSuccess()) {
-            log.info("启动 Netty Server 端口：" + nettyConfig.getPort());
+        try{
+            ChannelFuture future = bootstrap.bind(nettyConfig.getPort()).sync();
+            if (future.isSuccess()) {
+                log.info("启动 Netty Server 端口：" + nettyConfig.getPort());
+            }
+            // 等待服务端监听端口关闭
+            future.channel().closeFuture().sync();
+        }catch (Exception e){
+            log.info("[出现异常] 释放资源,{}",e);
+            boss.shutdownGracefully();
+            work.shutdownGracefully();
+        }finally {
+            boss.shutdownGracefully();
+            work.shutdownGracefully();
         }
     }
 

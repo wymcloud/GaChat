@@ -3,6 +3,7 @@ package com.gachat.webservice.nettyclient.handle;
 import com.gachat.webservice.websocket.ImWebSocket;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.timeout.IdleStateEvent;
 
 public class NettyClientHandler extends SimpleChannelInboundHandler<String> {
 
@@ -13,4 +14,5 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<String> {
         //向websocket发送消息
         ImWebSocket.sendAllMessage(msg);
     }
+
 }
